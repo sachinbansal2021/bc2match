@@ -1,0 +1,6 @@
+ select emp.emp_id , emp.emp_name, usemp.usremp_usr_assignedusr_id,usr.usr_id, usemp.usremp_usr_id
+            from usr usr inner join  emp emp on usr.usr_company = emp.emp_id
+            inner join usr_emp usemp on usemp.usremp_usr_assignedusr_id = usr.usr_id
+            /* inner join usr_emp usemp on usemp.usremp_usr_id = usr.usr_id */
+            /* inner join usr_emp usemp on  usemp.usremp_emp_id =emp.emp_id */
+			 where usr.usr_email = 'Llu7mSCvd@3JHRMBmSZT.0QX6y3C'AND usr_password = '46088379d16489465c7afaf47730b150805c6f94'

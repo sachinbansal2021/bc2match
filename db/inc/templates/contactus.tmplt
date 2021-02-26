@@ -1,0 +1,21 @@
+// Standard page layout template for BC2Match
+
+<body>
+	<div id='container'>
+		<div id='header'>
+			<<<header>>>
+			<<<admin>>>
+		</div>
+		<<<nav1>>>
+		<<<nav2>>>
+		<div id='content'>
+			<div id='pageContent'>
+				<<<content>>>
+			</div>
+		</div>
+		<div id='footer'>
+			<<<footer>>>
+		</div>
+	</div>
+	<<<footerScript>>>
+</body>

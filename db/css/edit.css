@@ -1,0 +1,69 @@
+/* global styles */
+body { 
+	font-size: 14px; font-family: arial; margin: 0 0; padding: 0 0;
+	min-height:100%;
+}
+
+
+/* page container */
+#container { 
+	max-width:1004px; min-height:100%; position:relative; 
+	margin-left: auto; margin-right: auto; margin-top: 0; 
+	border-left:1px solid black; border-right:1px solid black;
+	box-shadow:0px 0px 15px #000;
+}
+
+/* page header */
+#header {
+	width:100%; background:#fff; height:120px;
+}
+	.login {
+		right:0px; position:absolute; 
+	}
+	.loginlabel {
+	    // display: block; 
+		font-weight: bold; font-size:13px;
+	}
+	.loginbox {
+		width:100px;
+	}
+	.forgotlink {
+		color: #1FA2E1; text-decoration: none; position:absolute; margin-top:20px; font-size:13px;
+	}
+	.userAccount {
+		right:20px; top:10px; position:absolute; 
+	}
+	.userLogout {
+
+	}
+
+#topSocial { float: right; position: absolute; right: 5px; top: 45px; }
+#topSocial ul li { float: left; padding: 0 5px; width: 50px; list-style: none;}
+#topSocial ul li a { background: url("/themes/boldy/images/bk_topsocial.png") no-repeat scroll 0 0 transparent; display: block; height: 47px; width: 47px; }
+#topSocial ul li a img { border: medium none; margin-left: 8px; margin-top: 9px; }
+#topSocial ul li a:hover { background: none repeat scroll 0 0 transparent; }
+
+/* navigation */
+#nav1 { height:50px; position:absolute; z-Index:15; background:#000; width:100%;}
+#nav1 ul { margin:0; padding:0; }   
+#nav1 li { width:100px; height:50px; float:left; color:#191919; text-align:center; overflow:hidden; font-size:16px}  
+#nav1 a{ color:#FFF; text-decoration:none; }  
+#nav1 p{ padding:0px 5px; margin-top: 15px;}  
+	.subtext{ margin-top:15px; background:#333; color: #FFF; height: 70px; font-size:15px;  padding-top: 13px; }  
+
+#nav2 { background:#400; color:#ff4;}
+#nav2 div { display:inline-block; padding:10px; }
+#nav2 div:hover { display:inline-block; padding:10px; background:#f00;}
+
+
+/* content */
+#mceItemTable {
+	background:#fff; padding: 50px 10px 175px 10px; min-height:700px;
+}
+	/* accordion group */
+	.group { zoom: 1 }
+
+/* page footer */
+#footer {
+	background:#ddf; position:absolute; bottom:0; width:100%; max-width:1004px; height:175px; text-align: center; background:#000; color:#fff;
+}

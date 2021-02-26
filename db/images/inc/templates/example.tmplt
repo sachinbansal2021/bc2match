@@ -1,0 +1,23 @@
+// C3cms base template - Jacob Munoz
+// original base template.  not for actual use - for copying.
+//
+<body>
+	<div id='container'>
+		<div id='header'>
+			<<<header>>>
+// hidden comment
+			<<<admin>>>
+		</div>
+		<<<nav1>>>
+		<div id='content'>
+			<<<nav2>>>
+			<div id='pageContent'>
+				<<<content>>>
+			</div>
+		</div>
+		<div id='footer'>
+			<<<footer>>>
+		</div>
+	</div>
+	<<<footerScript>>>
+</body>

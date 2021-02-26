@@ -1,0 +1,230 @@
+<?php
+if (!defined('C3cms')) die('');
+define('C3cmsCore', 1);
+// Initiliaztion ---------------------------------------------------------------------
+	// Variables
+$siteWebRoot = 'http://www.bizconnectonline.com/demo/';
+$siteFileRoot = '/home/bizcon/public_html/demo/';
+$siteTmpPath = '/home/bizcon/tmp/';
+$buffer = ''; $content = ''; $reqDebug = ''; 
+$headerScript = ''; $footerScript = ''; $scriptLinks = '';
+$adminNav=''; $nav1=''; $nav2='';
+$cssInline=''; $cssLinks='';
+//$sessionPath = '/home/upojobco/tmp';
+	// Session
+//session_save_path($sessionPath);
+//ini_set('session.gc_maxlifetime',28800); // 8 hours (in seconds) [default 1440 == 24 minutes]
+//ini_set('session.gc_probability',1);
+//ini_set('session.gc_divisor',1);
+//if (!isset($_SESSION['usr_id'])) 
+session_start();
+
+$activepage = $_REQUEST['page'] or $activepage = $_SESSION['sys_activepage'] or $activepage = '';
+	// Database
+$server="localhost"; $db="bizcon_demo_upo";
+$user="bizcon"; //$password="Cccsolut818";
+$password="sei93G7bm!";
+mysql_connect($server, $user, $password) or die('Could not connect to the MySQL database server');
+mysql_select_db($db) or die('Could not select the specified database.');
+
+			
+// Login --------------------------------------------------------------------
+if (isset($_REQUEST['op'])) {
+	if ($_REQUEST['op']=='login') {
+		$query = "SELECT * FROM usr WHERE usr_email ='" . Clean($_REQUEST['username']) . "' AND usr_password = '" . sha1($_REQUEST['password']) . "'";
+		if ($result=mysql_query($query)) {
+			if (mysql_num_rows($result)>0) {
+				$row = mysql_fetch_array($result);
+				$_SESSION['usr_id'] = $row['usr_id'];
+				$_SESSION['usr_firstname'] = $row['usr_firstname'];
+				$_SESSION['usr_lastname'] = $row['usr_lastname'];
+				$_SESSION['usr_prefix'] = $row['usr_prefix'];
+				$_SESSION['usr_auth'] = $row['usr_auth'];
+				$resultlogin = Q("UPDATE usr SET usr_lastlogin = '" . date('Y-m-d H:i:s') . "', usr_live='".date('Y-m-d H:i:s')."' WHERE usr_id = '" . $_SESSION['usr_id'] . "';");	
+				switch($_SESSION['usr_auth']) {
+					case "1": header("Refresh: 1; url=/demo/applicants"); die(); break;
+					case "2": header("Refresh: 1; url=/demo/employers"); die(); break;
+					//case "1": header("Refresh: 1; url=/demo/bc2dashboards"); die(); break;
+					//case "2": header("Refresh: 1; url=/demo/bc2dashboards"); die(); break;
+					case "3": header("Refresh: 1; url=/demo/admin_app"); die(); break;
+					case "4": header("Refresh: 1; url=/demo/admin_rep"); die(); break;
+					case "5": case "6": header("Refresh: 1; url=/demo/admin_emp"); die(); break;
+					case "7": case "8": header("Refresh: 1; url=/demo/admin_usr"); die(); break;
+					case "9": header("Refresh: 1; url=/demo/BC2Dashboard-Draft-01-PHP"); die(); break;
+				}
+			} 
+		} 
+	}
+} else  Q("UPDATE usr SET usr_live='".date('Y-m-d H:i:s')."' WHERE usr_id = '" . $_SESSION['usr_id'] . "';");
+
+// Security ---------------------------------------------------------------------
+if (!isset($_SESSION['usr_id'])) { // get authorization level of user
+	$_SESSION['usr_id'] = 0; $_SESSION['usr_auth'] = 0;
+	$_SESSION['usr_firstname'] = "Public"; $_SESSION['usr_lastname'] = "Visitor";
+}
+
+if ($_SESSION['usr_auth'] == 1) require($siteFileRoot.'inc/applicant.php'); 
+if ($_SESSION['usr_auth'] == 2) require($siteFileRoot.'inc/employer.php'); 
+if ($_SESSION['usr_auth'] == 3) require($siteFileRoot.'inc/manager.php'); 
+if ($_SESSION['usr_auth'] == 4) require($siteFileRoot.'inc/ceo.php'); 
+if ($_SESSION['usr_auth'] == 5) require($siteFileRoot.'inc/developer.php'); 
+if ($_SESSION['usr_auth'] >= 6) require($siteFileRoot.'inc/administrator.php'); 
+if ($_SESSION['usr_auth'] == 9) require($siteFileRoot.'inc/BC2Dashboard-Draft-01-PHPs.php');
+if ($pageauth > $_SESSION['usr_auth']) { header("Refresh: 1; url=/demo"); die(); }// terminate page if unathorized
+if ($template != '') require $siteFileRoot."inc/templates/".$template.".php";
+
+// Global Functions ---------------------------------------------------------------------
+	// security
+function Clean($param,$length=false){ // escapes and optionally trims input
+	if ($length!=false) return mysql_real_escape_string(substr($param, 0, $length));
+	else return mysql_real_escape_string($param);
+}
+
+function CleanS($param){ // returns first space-delimited word (use with caution - very strict)
+	$safe=explode(" ",$param);
+	return Clean($safe[0]);
+}
+
+function CleanI($param){ // returns cleaned INT value
+	return intval(CleanS($param));
+}
+
+function CleanJS($param) {
+	return htmlspecialchars(addcslashes($param,"\\\'\"&\n\r<>"));
+}
+	// debugging
+function debug($debugdata) {
+//	try { @$_SESSION['debugDATA'] .= $debugdata; }
+//	catch (Exception $dx) { $_SESSION['debugDATA'] = $debugdata; }
+}
+
+	// database / queries
+function Q($query){ // Global query (result = mysql_result OR false if (0 rows OR error))
+	global $reqDebug;
+	$q = mysql_query($query) or debug(mysql_error()." in QUERY=".$query."<br/>");
+	if ($q) {
+		try { if (@mysql_num_rows($q) == 0) $q = false; }
+		catch (Exception $exc) { 
+			debug("Failed.  Exception: ".$exc." in QUERY=".$query."<br/>");
+			try { 
+//				mysql_query("INSERT INTO Errors (err_session, err_details) VALUES ('".session_id()."','".mysql_real_escape_string($query)."');");
+			} catch (Execption $exxc) { debug("Could not record in error log!<br/>"); }
+		}
+	} else debug("Failed query =".$query."<br/>");
+	return $q;
+}
+
+function QV($query) { // Query get single value or NULL
+	global $reqDebug;
+	$qv = Q($query);
+	if ($qv) {
+		if (mysql_num_rows($qv)>0) {
+			$datrow = mysql_fetch_row($qv);
+			debug('Fetched Row Value:'.$datrow[0].'<br/>');
+			return $datrow[0];
+		} else return null;
+	} else return null;
+}
+
+function Q2R($queryObject) { // Query string or object to row (array) or false
+	global $reqDebug;
+	if (gettype($queryObject)=="resource" && $queryObject != false) return mysql_fetch_assoc($queryObject);
+	else {
+		if ($queryObject == false) return false;
+		$realQueryObject = Q($queryObject);
+		if ($realQueryObject) return mysql_fetch_assoc($realQueryObject);
+		else return false;
+	}
+}
+
+function Q2T($queryObject) { // Query string or object to table (array of array) or false
+	$dataOut = array();
+	if (gettype($queryObject)=="resource" && $queryObject != false) {
+		while ($datRow = mysql_fetch_assoc($queryObject)) array_push($dataOut, $datRow);
+		return $dataOut;
+	} else {
+		if ($queryObject == false) return false;
+		$realQueryObject = Q($queryObject);
+		if ($realQueryObject) {
+			while ($datRow = mysql_fetch_assoc($realQueryObject)) array_push($dataOut, $datRow);
+			return $dataOut;
+		}
+		else return false;
+	}
+}
+
+function QI($queryString) { // Insert and safely return id or false
+	global $reqDebug;
+	$qO = mysql_query($queryString);
+	if ( $qO != false ) return mysql_insert_id();
+	else return false;
+}
+
+function QU($queryObject) {
+	if (gettype($queryObject)=="resource" && $queryObject != false) {
+		return mysql_affected_rows();
+	} else {
+		if ($queryObject == false) return false;
+		$realQueryObject = Q($queryObject);
+		return mysql_affected_rows();
+	}
+	return false;
+}
+
+function DBContent($areaName = '', $areaSub = '') {
+	global $content, $title, $footerScript;
+	$footerScript .= ' $("#adminNav").append("<div onclick=\"editPage(\''.QV("SELECT rescon_id FROM res_content WHERE rescon_area = '".$title."' AND rescon_sub='".$areaSub."' ").'\');\" >Edit '.($areaSub==''?'Page':'\"'.$areaSub.'\"').'</div>");';
+	if ($areaName == '') $areaName = $title;
+	return QV("SELECT rescon_content FROM res_content WHERE rescon_area='".$areaName."' AND rescon_sub='".$areaSub."' ");	
+}
+
+function DropDown($id, $name, $dataTable, $inline = '', $selected = '') {
+	$subBuffer = "<select id='".$id."' name='".$name."' ".$inline." >";
+	foreach ($dataTable as $row) $subBuffer .= "<option ".($row['id']==$selected?'selected="selected"':'')." value='".$row['id']."'>".$row['label']."</option>";
+	$subBuffer .= "</select>";
+	return $subBuffer;
+} 
+
+function T2H($tableObject, $tableName = '', $tableExt = ''){
+	global $content;
+	$subbuffer = '<table '.($tableName==''?'':'id="'.$tableName.'"').' '.$tableExt.'>';
+	$rowsubbuffer = '<tbody>'; $headerbuffer = '<thead><tr>'; $headerarray = array();
+	if ($tableObject) foreach ($tableObject as $tRowK => $tRowV) {
+		$rowsubbuffer .= '<tr id="'.$tableName.'_'.$tRowK.'">'; $tablerowcol = 0;
+		foreach ($tRowV as $tCellK => $tCellV) { 
+			$rowsubbuffer .= '<td id="'.$tableName.'_'.$tRowK.'_'.$tCellK.'">'.$tCellV.'</td>';
+			$headerarray[$tablerowcol] = array();
+			$headerarray[$tablerowcol]['col'] = $tCellK;
+			$tablerowcol += 1;
+		}
+		$rowsubbuffer .= '</tr>';
+	}
+	if ($tableObject) foreach ($headerarray as $headerK => $headerV) $headerbuffer .= '<th>'.$headerV['col'].'</th>';
+	$headerbuffer .= '</tr></thead>';
+	$rowsubbuffer .= '</tbody>';
+	$subbuffer .= $headerbuffer.$rowsubbuffer.'</table>';
+	return $subbuffer;
+}
+function T2HR($tableObject, $tableName = '', $tableExt = ''){
+	global $content;
+	$subbuffer = '<table '.($tableName==''?'':'id="'.$tableName.'"').' '.$tableExt.'>';
+	$rowsubbuffer = '<tbody>'; $headerbuffer = '<thead><tr style="background:#ffff00;">'; $headerarray = array();
+	$toggle = true;
+	if ($tableObject) foreach ($tableObject as $tRowK => $tRowV) {
+		$rowsubbuffer .= '<tr id="'.$tableName.'_'.$tRowK.'" >'; $tablerowcol = 0;
+		foreach ($tRowV as $tCellK => $tCellV) { 
+			$rowsubbuffer .= '<td id="'.$tableName.'_'.$tRowK.'_'.$tCellK.'" style="'.($toggle?'background:#ffffff;':'background:#efefff;').'">'.$tCellV.'</td>';
+			$headerarray[$tablerowcol] = array();
+			$headerarray[$tablerowcol]['col'] = $tCellK;
+			$tablerowcol += 1;
+		}
+		$toggle = !$toggle;
+		$rowsubbuffer .= '</tr>';
+	}
+	if ($tableObject) foreach ($headerarray as $headerK => $headerV) $headerbuffer .= '<th style="background:#ffff00;">'.$headerV['col'].'</th>';
+	$headerbuffer .= '</tr></thead>';
+	$rowsubbuffer .= '</tbody>';
+	$subbuffer .= $headerbuffer.$rowsubbuffer.'</table>';
+	return $subbuffer;
+}
+?>
