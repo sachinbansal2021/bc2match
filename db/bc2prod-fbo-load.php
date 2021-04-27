@@ -19,7 +19,7 @@ function sendmail($subject = null, $body = null, $to = null){
 	//Set your existing gmail address as user name
 	$mail->Username = 'larryf@bc2match.com';
 	//Set the password of your gmail address here
-	$mail->Password = 'bc2Franklin';
+	$mail->Password = 'ljf$bc22021';
 	if(!$mail->send()) {
 	  echo 'Email is not sent.';
 	  echo 'Email error: ' . $mail->ErrorInfo;
@@ -793,7 +793,7 @@ $content .= "<br>Yesterday: ".$postedDate;
 $runstarttime = date('Y-m-d H:i:s');
  
 
-//$postedDate = "01/18/2021";
+//$postedDate = "03/11/2021";
 //$postedDate2 = "01/18/2021";
 
 

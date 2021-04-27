@@ -211,7 +211,7 @@ if ($usrData)
         echo $geos."<br>";
 */
 
-        if ($agencies > 0) $ccnt = ccnt + 1;
+        if ($agencies > 0) $ccnt = $ccnt + 1;
         if ($certs > 0) $ccnt = $ccnt + 1;
         if ($skills > 0) $ccnt = $ccnt + 1;
         if ($vehicles > 0) $ccnt = $ccnt + 1;

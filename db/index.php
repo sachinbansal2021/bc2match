@@ -20,7 +20,14 @@ EOS;
  	
 $content .= DBContent();
 
-
+$content .= '<!-- Global site tag (gtag.js) - Google Analytics -->';
+$content .= '<script async src="https://www.googletagmanager.com/gtag/js?id=UA-167338735-1"></script>';
+$content .= '<script>';
+$content .= '  window.dataLayer = window.dataLayer || [];';
+$content .= '  function gtag(){dataLayer.push(arguments);}';
+$content .= "  gtag('js', new Date());";
+$content .= "  gtag('config', 'UA-167338735-1');";
+$content .= '</script>';
    
 //-- transmit ---------------------------------------------------------------
 require "inc/transmit.php"; ?>

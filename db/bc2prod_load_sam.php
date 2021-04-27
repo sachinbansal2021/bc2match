@@ -1,4 +1,35 @@
 <?php
+    require '/home/cccsol818/public_html/phpMailer/class.phpmailer.php';
+    require '/home/cccsol818/public_html/phpMailer/class.smtp.php';
+	
+function sendmail($subject = null, $body = null, $to = null){
+	$mail = new PHPMailer;
+	$mail->setFrom('larryf@bc2match.com');
+	$mail->addAddress($to);
+    	$mail->isHTML(true); 
+	$mail->Subject = $subject;
+	$mail->Body = $body;
+	$mail->IsSMTP();
+	$mail->SMTPSecure = 'starttls';
+	$mail->Host = 'tls://smtp.office365.com';
+	$mail->SMTPAuth = true;
+	$mail->Port = 587;
+
+	//Set your existing gmail address as user name
+	$mail->Username = 'larryf@bc2match.com';
+	//Set the password of your gmail address here
+	$mail->Password = 'ljf$bc22021';
+	if(!$mail->send()) {
+	  echo 'Email is not sent.';
+	  echo 'Email error: ' . $mail->ErrorInfo;
+	  echo '<br/>';
+	} else { echo $to; echo '<br/>';
+	  echo 'Email has been sent.';
+	  echo '<br/>';
+	}https://www.google.com/aclk?sa=l&ai=DChcSEwjX-r_ew-_tAhUB47MKHXYTBWcYABAPGgJxbg&sig=AOD64_1Q-fou0N3qBZ3N1za9XTh3Q4X0PQ&adurl=&ctype=5&q=&nb=9&rurl=https%3A%2F%2Fwww.bestbuy.com%2F&nm=69&nx=73&ny=78&is=1500x415	
+}	
+
+
 
 function SaveLine ($field, $line, $tlen, $same)
 {
@@ -521,7 +552,15 @@ function QU($queryObject) {
 
  
 $runfrom = "BC2PROD";
-echo "<br>\r\nStarting FBO LOAD for " . $runfrom . " at [ " .  date('m-d-Y')." ] [ ".date('H:i:s')." ]<br>\r\n<br>\r\n" ;
+echo "<br>\r\nStarting SAM LOAD for " . $runfrom . " at [ " .  date('m-d-Y')." ] [ ".date('H:i:s')." ]<br>\r\n<br>\r\n" ;
+
+$loadstats = "<br>\r\nStarting SAM LOAD for " . $runfrom . " at [ " .  date('m-d-Y')." ] [ ".date('H:i:s')." ]<br>\r\n<br>\r\n" ;
+
+$body = $loadstats;
+$subject = "SAM Load Starting - [ ".date('m-d-Y')." ]";
+$to = "larryf@bc2match.com";
+sendmail($subject, $body, $to);
+
 
 //DEMO 
 //$parentpath = "/home/cccsol818/public_html/bc2demo";
@@ -532,12 +571,12 @@ echo "<br>\r\nStarting FBO LOAD for " . $runfrom . " at [ " .  date('m-d-Y')." ]
 
 // Database
 //DEMO
-/**/
+/*
 $server="localhost";
 $db="cccsol81_bc2demo";
 $user="cccsol81_bc2demo";
 $password="bc2demo.ccc818";
-
+*/
 
 //DEV
 /*
@@ -548,12 +587,12 @@ $password="bc2dev.ccc818";
 */
 
 //bc2prod
-/*
+/**/
 $server="localhost";
 $db="cccsol81_bc2prod";
 $user="cccsol81_bc2prod";
 $password="bc2prod.ccc818";
-*/
+
 
 
 //mysql_connect($server, $user, $password) or die('Could not connect to the MySQL database server');
@@ -564,7 +603,8 @@ $conn = mysqli_connect($server, $user, $password, $db) or die('Could not connect
 
 $sam = [];
 
-$h = fopen("SAMNYNJGAFLPromoList.csv","r");
+//$h = fopen("SAMNYNJGAFLPromoList.csv","r");
+$h = fopen("sam2021_exception_fix.csv","r");
 
 while (($data = fgetcsv($h, 1000,",")) !== FALSE)
 {
@@ -576,6 +616,8 @@ $actualtot = $num - 1;
 
 echo "Total Records to process: ".$actualtot."<br>";
 
+$loadstats .= "Total Records to process: ".$actualtot."<br>\r\n";
+
 //exit();
 
 $co_cnt = 0;
@@ -584,9 +626,11 @@ $exceptions="";
 $err_cnt = 0;
 
 
-$sam_id_start = 200003;
-$sam_id_cnt = 200003;
+$sam_id_start = 246641;
+$sam_id_cnt = 246641;
 
+//for ($i=1; $i < $num ; $i++)
+//for ($i=1; $i <= 2 ; $i++)
 for ($i=1; $i < $num ; $i++)
 {
 
@@ -663,57 +707,63 @@ for ($i=1; $i < $num ; $i++)
     }
     else
     {
+        $sam_emp = "INSERT INTO emp(sam_id, emp_name, emp_address,emp_dba, emp_url, emp_address2, emp_city, emp_st, emp_zip, emp_level) ";
+        $sam_emp .= "SELECT sam_id, company, addr1, dba, url, addr2, city, st, zip, 2 FROM sam2021 where sam_id = ".$sam_id_cnt;
+        $load_emp = QI($sam_emp);
+        //echo $sam_emp.";<br><br>";
+
+
+        //$sam_usr = "INSERT INTO usr (sam_id, usr_email, usr_firstname, usr_lastname, usr_title, usr_addr, usr_addr1, usr_city, usr_state, usr_zip, usr_phone, usr_fax, usr_password, usr_auth, usr_type, usr_company) ";
+        //$sam_usr .= "SELECT sam_id, gov_poc_email, gov_poc_fn, gov_poc_ln, title, addr1, addr2, city, st, zip, `gov_poc_tel`, `gov_poc_fax`,'7110eda4d09e062aa5e4a390b0a572ac0d2c0220', '2', '0', E.emp_id FROM `sam2021` S JOIN emp E on S.sam_id - E.sam_id where S.sam_id >= $sam_id_start";
+
+        $sam_usr = "INSERT INTO usr (sam_id, usr_email, usr_firstname, usr_lastname, usr_title, usr_addr, usr_addr1, usr_city, usr_state, usr_zip, usr_phone, usr_fax, usr_password, usr_auth, usr_type) ";
+        $sam_usr .= "SELECT sam_id, gov_poc_email, gov_poc_fn, gov_poc_ln, title, addr1, addr2, city, st, zip, `gov_poc_tel`, `gov_poc_fax`,'7110eda4d09e062aa5e4a390b0a572ac0d2c0220', '2', '0' FROM sam2021 where sam_id = ".$sam_id_cnt;
+        $load_usr = QI($sam_usr);
+        //echo $sam_usr.";<br><br>";
+
+
+
+        $sam_usremp = "INSERT INTO usr_emp (sam_id, usremp_usr_id, usremp_emp_id, usremp_auth, usremp_type) Select U.sam_id, U.usr_id, E.emp_id,'*','0' from emp E join usr U on E.sam_id = U.sam_id where U.sam_id = ".$sam_id_cnt;
+        $load_usremp = QI($sam_usremp);
+        //echo $sam_usremp.";<br><br>";
+
+
+        $sam_clearance = "INSERT INTO usr_clearance (sam_id, usrclr_usr_id, usrclr_emp_id, usrclr_clr_id, usrclr_title) select U.sam_id, U.usr_id, E.emp_id, '4','None' from emp E join usr U on E.sam_id = U.sam_id where U.sam_id = ".$sam_id_cnt;
+        $load_clearance = QI($sam_clearance);
+        //echo $sam_clearance.";<br><br>";
+
+
+        $sam_usr_edu = "insert into usr_edu (sam_id, usredu_usr_id, usredu_emp_id,usredu_edu_id) select U.sam_id, U.usr_id, E.emp_id, '1' from emp E join usr U on E.sam_id = U.sam_id where U.sam_id = ".$sam_id_cnt;
+        $load_usr_edu = QI($sam_usr_edu);
+        //echo $sam_usr_edu.";<br><br>";
+
+
+        $sam_usr_app = "insert into usr_app (sam_id, usrapp_usr_id, usrapp_emp_id, usrapp_status, usrapp_edu_level, usrapp_ava_id, usrapp_clearance) select U.sam_id, U.usr_id, E.emp_id, '1','0','1','0' from emp E join usr U on E.sam_id = U.sam_id where U.sam_id = ".$sam_id_cnt;
+        $load_usr_app = QI($sam_usr_app);
+        //echo $sam_usr_app.";<br><br>";        
+        
         $sam_id_cnt++;
         $co_cnt++;
     }
 
 }
 
-
-$sam_emp = "INSERT INTO emp(sam_id, emp_name, emp_address,emp_dba, emp_url, emp_address2, emp_city, emp_st, emp_zip, emp_level) ";
-$sam_emp .= "SELECT sam_id, company, addr1, dba, url, addr2, city, st, zip, 2 FROM sam2021 where sam_id >= ".$sam_id_start;
-$load_emp = QI($sam_emp);
-echo $sam_emp.";<br><br>";
-
-
-//$sam_usr = "INSERT INTO usr (sam_id, usr_email, usr_firstname, usr_lastname, usr_title, usr_addr, usr_addr1, usr_city, usr_state, usr_zip, usr_phone, usr_fax, usr_password, usr_auth, usr_type, usr_company) ";
-//$sam_usr .= "SELECT sam_id, gov_poc_email, gov_poc_fn, gov_poc_ln, title, addr1, addr2, city, st, zip, `gov_poc_tel`, `gov_poc_fax`,'7110eda4d09e062aa5e4a390b0a572ac0d2c0220', '2', '0', E.emp_id FROM `sam2021` S JOIN emp E on S.sam_id - E.sam_id where S.sam_id >= $sam_id_start";
-
-$sam_usr = "INSERT INTO usr (sam_id, usr_email, usr_firstname, usr_lastname, usr_title, usr_addr, usr_addr1, usr_city, usr_state, usr_zip, usr_phone, usr_fax, usr_password, usr_auth, usr_type) ";
-$sam_usr .= "SELECT sam_id, gov_poc_email, gov_poc_fn, gov_poc_ln, title, addr1, addr2, city, st, zip, `gov_poc_tel`, `gov_poc_fax`,'7110eda4d09e062aa5e4a390b0a572ac0d2c0220', '2', '0' FROM sam2021 where sam_id >= ".$sam_id_start;
-$load_usr = QI($sam_usr);
-echo $sam_usr.";<br><br>";
-
-
-
-$sam_usremp = "INSERT INTO usr_emp (sam_id, usremp_usr_id, usremp_emp_id, usremp_auth, usremp_type) Select U.sam_id, U.usr_id, E.emp_id,'*','0' from emp E join usr U on E.sam_id = U.sam_id where U.sam_id >= ".$sam_id_start;
-$load_usremp = QI($sam_usremp);
-echo $sam_usremp.";<br><br>";
-
-
-
-$sam_clearance = "INSERT INTO usr_clearance (sam_id, usrclr_usr_id, usrclr_emp_id, usrclr_clr_id, usrclr_title) select U.sam_id, U.usr_id, E.emp_id, '4','None' from emp E join usr U on E.sam_id = U.sam_id where U.sam_id >= ".$sam_id_start;
-$load_clearance = QI($sam_clearance);
-echo $sam_clearance.";<br><br>";
-
-
-$sam_usr_edu = "insert into usr_edu (sam_id, usredu_usr_id, usredu_emp_id,usredu_edu_id) select U.sam_id, U.usr_id, E.emp_id, '1' from emp E join usr U on E.sam_id = U.sam_id where U.sam_id >= ".$sam_id_start;
-$load_usr_edu = QI($sam_usr_edu);
-echo $sam_usr_edu.";<br><br>";
-
-
-$sam_usr_app = "insert into usr_app (sam_id, usrapp_usr_id, usrapp_emp_id, usrapp_status, usrapp_edu_level, usrapp_ava_id, usrapp_clearance) select U.sam_id, U.usr_id, E.emp_id, '1','0','1','0' from emp E join usr U on E.sam_id = U.sam_id where U.sam_id >= ".$sam_id_start;
-$load_usr_app = QI($sam_usr_app);
-echo $sam_usr_app.";<br><br>";
-
-
-
-
 echo "Total Records Loaded: ".$co_cnt."<br>";
 echo "Total Records in File: ".$reccnt."<br>";
 echo "Total Errors: ".$err_cnt."<br><br>";
 echo "*** Error Start ***<br>".$exceptions."*** Error End ***<br>";
 
+
+$loadstats .= "Total Records Loaded: ".$co_cnt."<br>\r\n";
+$loadstats .= "Total Records in File: ".$reccnt."<br>\r\n";
+$loadstats .= "Total Errors: ".$err_cnt."<br><br>\r\n";
+$loadstats .= "*** Error Start ***<br>".$exceptions."*** Error End ***<br>\r\n";
+
+$body = $loadstats;
+$subject = "SAM Load Finished - [ ".date('m-d-Y')." ]";
+
+$to = "larryf@bc2match.com";
+sendmail($subject, $body, $to);
 
 fclose($h);
 ?>

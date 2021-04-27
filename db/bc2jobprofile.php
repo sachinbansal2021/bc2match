@@ -107,7 +107,7 @@ $content .= '<br><div style="text-align:center;">
 
 if (($emp_level > 1) || $userType==99 )
 {
-$content .= '<td><a href="/'.$_SESSION['env'].'/employers.php?usr='.$passprofile_usr.'&company_id='.$passprofile_emp.'">Post a Job</a></td>';
+$content .= '<td><a href="/'.$_SESSION['env'].'/employers.php?usr='.$passprofile_usr.'&company_id='.$passprofile_emp.'">Build Your Team</a></td>';
 
 $content .= '<td><a href="/'.$_SESSION['env'].'/p_admins.php?usr='.$passprofile_usr.'&company_id='.$passprofile_emp.'">Search Members</a></td>';
 }

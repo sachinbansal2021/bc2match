@@ -354,14 +354,18 @@ if (($searchresults == 1) || ($_REQUEST['ptype'] == 'admin')) {
 		$company = $_SESSION['search_company'];
 	
 	  // get company for tojo lloyd	$usr_search = "Select usr_id, usr_email, usr_firstname, usr_lastname, usr_type from usr where ";
-		$usr_search = "Select usr.usr_id, usr.usr_email, usr.usr_firstname, usr.usr_lastname, usr.usr_type ,emp.emp_id, emp.emp_name  ";
-			$usr_search  = $usr_search  .  " from usr usr left join emp emp on usr.usr_company =  emp.emp_id ";
-		$usr_search  = $usr_search  . " where ";
+		//$usr_search = "Select usr.usr_id, usr.usr_email, usr.usr_firstname, usr.usr_lastname, usr.usr_type ,emp.emp_id, emp.emp_name  ";
+		//$usr_search  = $usr_search  .  " from usr usr left join emp emp on usr.usr_company =  emp.emp_id ";
 		
+		$usr_search = "Select usr.usr_id, usr.usr_email, usr.usr_firstname, usr.usr_lastname, usr.usr_type ,emp.emp_id, emp.emp_name ";
+		$usr_search .= "from usr_emp UE inner join usr usr inner join emp emp on UE.usremp_usr_id = usr.usr_id and UE.usremp_emp_id = emp.emp_id ";
+
 		if (!empty($company)) {
 	
-				$usr_search = $usr_search." usr.usr_company in (select emp_id from emp where emp_name like '%".$company."%')";
+				$usr_search .= " where UE.usremp_emp_id in (select emp_id from emp where emp_name like '%".$company."%')";
 		}
+		
+		echo $usr_search."<br>";
 	}
 	
 	

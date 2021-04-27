@@ -138,12 +138,12 @@ $password="bc2dev.ccc818";
 */
 
 //bc2prod
-/*
+/**/
 $server="localhost";
 $db="cccsol81_bc2prod";
 $user="cccsol81_bc2prod";
 $password="bc2prod.ccc818";
-*/
+
 
 
 //mysql_connect($server, $user, $password) or die('Could not connect to the MySQL database server');

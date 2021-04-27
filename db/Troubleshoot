@@ -3,4 +3,4 @@
             inner join usr_emp usemp on usemp.usremp_usr_assignedusr_id = usr.usr_id
             /* inner join usr_emp usemp on usemp.usremp_usr_id = usr.usr_id */
             /* inner join usr_emp usemp on  usemp.usremp_emp_id =emp.emp_id */
-			 where usr.usr_email = 'Llu7mSCvd@3JHRMBmSZT.0QX6y3C'AND usr_password = '46088379d16489465c7afaf47730b150805c6f94'
+			 where usr.usr_email = 'pam@sbcconstruction.net'AND usr_password = 'f535326c84c5e76e6119160cba5b715d58ce0918'

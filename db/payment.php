@@ -46,7 +46,7 @@ function sendmail($subject = null, $body = null, $to = array()){
 	//Set your existing gmail address as user name
 	$mail->Username = 'renewals@bc2match.com';
 	//Set the password of your gmail address here
-	$mail->Password = 'Newmember1234';
+	$mail->Password = 'Bc2$2021';
 	$mail->send();
 	//For testing
 	/*if(!$mail->send()) {
@@ -316,7 +316,8 @@ EOS;
 			$resultCont .= '<a href="/db/bc2members.php?usr='.$subsID.'&company_id='.$subCoID.'">Click here to return to your Member Dashboard</a></center>';
 			$resultCont .= '</td></tr></table></center>';
 		} else {
-			$resultCont = '<h2>'.$result['msg'].'</h2><br><br>';
+			//$resultCont = '<h2>'.$result['msg'].'</h2><br><br>';
+			$resultCont = '<h2>'.$result->msg.'</h2><br><br>';
 			$resultCont .= '<a href="/db/bc2members.php?usr='.$subsID.'&company_id='.$subCoID.'">Click here to return to your Member Dashboard</a></center>';
 		}
 	}
